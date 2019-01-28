@@ -4,7 +4,7 @@ from cogs.utils import db
 
 
 class LeaderboardDB(db.Table, table_name='leaderboard'):
-    id = db.PrimaryKeyColumn
+    id = db.PrimaryKeyColumn()
 
     user_id = db.Column(db.Integer(big=True))
     guild_id = db.Column(db.Integer(big=True))
@@ -47,22 +47,6 @@ class Leaderboard:
         return await self.get_leaderboard_all(game, ctx)
 
     @commands.command()
-    async def transfer(self, ctx):
-        import csv
-        with open('trivia.csv', newline='\r\n', encoding='utf-8') as csv_file:
-            query = "INSERT INTO trivia (category, difficulty, question," \
-                    " answers, correct, used) VALUES ($1, $2, $3, $4, $5, $6)"
-            csv_reader = csv.reader(csv_file, delimiter=',', quotechar="'")
-            rows = 0
-            for row in csv_reader:
-                if rows == 0:
-                    rows += 1
-                    continue
-                rows += 1
-                await ctx.db.execute(query, row[1], row[2], row[3], row[4], row[5], 0)
-        await ctx.message.add_reaction(ctx.tick(True))
-
-    @commands.command()
     async def gamestats(self, ctx, user: discord.Member = None):
         """Gives stats for games a user has played.
             PARAMETERS: [user] - @mention, nick#discrim, id
@@ -91,12 +75,6 @@ class Leaderboard:
                 """
         records = await self.bot.pool.fetch(query, gamecom)
 
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, record FROM leaderboard "
-        #                          "WHERE game = :game ORDER BY record ASC LIMIT 5",
-        #                          {'game': gamecom})
-        #     records = await c.fetchall()
-
         value = '\n'.join(f'{lookup[i]} <@{users[i]}>: {record[i]}'
                           for (index, (users, record)) in enumerate(records)) or 'No Records'
         embed.add_field(name="Top Records", value=value, inline=True)
@@ -107,12 +85,6 @@ class Leaderboard:
                 """
         games = await self.bot.pool.fetch(query, gamecom)
 
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, games FROM leaderboard "
-        #                          "WHERE game = :game ORDER BY games DESC LIMIT 5",
-        #                          {'game': gamecom})
-        #     games = await c.fetchall()
-
         value = '\n'.join(f'{lookup[index]} <@{users}>: {game}'
                           for (index, (users, game)) in enumerate(games)) or 'No Records'
         embed.add_field(name="Top games played", value=value, inline=True)
@@ -122,12 +94,6 @@ class Leaderboard:
                 WHERE game = $1 ORDER BY attempts DESC LIMIT 5;
                 """
         attempts = await self.bot.pool.fetch(query, gamecom)
-
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, attempts FROM leaderboard "
-        #                          "WHERE game = :game ORDER BY attempts DESC LIMIT 5",
-        #                          {'game': gamecom})
-        #     attempts = await c.fetchall()
 
         value = '\n'.join(f'{lookup[index]} <@{users}>: {attempt}'
                           for (index, (users, attempt)) in enumerate(attempts)) or 'No Records'
@@ -142,12 +108,6 @@ class Leaderboard:
                 """
         correct = await self.bot.pool.fetch(query, gamecom)
 
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, correct FROM leaderboard "
-        #                          "WHERE game = :game ORDER BY correct DESC LIMIT 5",
-        #                          {'game': gamecom})
-        #     correct = await c.fetchall()
-
         value = '\n'.join(f'{lookup[index]} <@{users}>: {corrects}'
                           for (index, (users, corrects)) in enumerate(correct)) or 'No Records'
         embed.add_field(name="Total correct answers", value=value, inline=True)
@@ -157,12 +117,6 @@ class Leaderboard:
                 WHERE game = $1 ORDER BY wrong DESC LIMIT 5;
                 """
         wrong = await self.bot.pool.fetch(query, gamecom)
-
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, wrong FROM leaderboard "
-        #                          "WHERE game = :game ORDER BY wrong DESC LIMIT 5",
-        #                          {'game': gamecom})
-        #     wrong = await c.fetchall()
 
         value = '\n'.join(f'{lookup[index]} <@{users}>: {wrongs}'
                           for (index, (users, wrongs)) in enumerate(wrong)) or 'No Records'
@@ -188,12 +142,6 @@ class Leaderboard:
                 """
         records = await self.bot.pool.fetch(query, gamecom, ctx.guild.id)
 
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, record FROM leaderboard "
-        #                          "WHERE game = :game AND guildid = :id ORDER BY record ASC LIMIT 5",
-        #                          {'game': gamecom, 'id': ctx.guild.id})
-        #     records = await c.fetchall()
-
         value = '\n'.join(f'{lookup[index]} <@{users}>: {record}'
                           for (index, (users, record)) in enumerate(records)) or 'No Records'
         embed.add_field(name="Top Records", value=value, inline=True)
@@ -204,12 +152,6 @@ class Leaderboard:
                 """
         games = await self.bot.pool.fetch(query, gamecom, ctx.guild.id)
 
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, games FROM leaderboard "
-        #                          "WHERE game = :game AND guildid = :id ORDER BY games DESC LIMIT 5",
-        #                          {'game': gamecom, 'id': ctx.guild.id})
-        #     games = await c.fetchall()
-
         value = '\n'.join(f'{lookup[index]} <@{users}>: {game}'
                           for (index, (users, game)) in enumerate(games)) or 'No Records'
         embed.add_field(name="Top games played", value=value, inline=True)
@@ -219,12 +161,6 @@ class Leaderboard:
                 WHERE game = $1 AND guild_id = $2 ORDER BY attempts DESC LIMIT 5;
                 """
         attempts = await self.bot.pool.fetch(query, gamecom, ctx.guild.id)
-
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, attempts FROM leaderboard "
-        #                          "WHERE game = :game AND guildid = :id ORDER BY attempts DESC LIMIT 5",
-        #                          {'game': gamecom, 'id': ctx.guild.id})
-        #     attempts = await c.fetchall()
 
         value = '\n'.join(f'{lookup[index]} <@{users}>: {attempt}'
                           for (index, (users, attempt)) in enumerate(attempts)) or 'No Records'
@@ -237,13 +173,6 @@ class Leaderboard:
                 """
         correct = await self.bot.pool.fetch(query, gamecom, ctx.guild.id)
 
-
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, correct FROM leaderboard "
-        #                          "WHERE game = :game AND guildid = :id ORDER BY correct DESC LIMIT 5",
-        #                          {'game': gamecom, 'id': ctx.guild.id})
-        #     correct = await c.fetchall()
-
         value = '\n'.join(f'{lookup[index]} <@{users}>: {corrects}'
                           for (index, (users, corrects)) in enumerate(correct)) or 'No Records'
         embed.add_field(name="Total correct answers", value=value, inline=True)
@@ -253,12 +182,6 @@ class Leaderboard:
                 WHERE game = $1 AND guild_id = $2 ORDER BY wrong DESC LIMIT 5;
                 """
         wrong = await self.bot.pool.fetch(query, gamecom, ctx.guild.id)
-
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT userid, wrong FROM leaderboard "
-        #                          "WHERE game = :game AND guildid = :id ORDER BY wrong DESC LIMIT 5",
-        #                          {'game': gamecom, 'id': ctx.guild.id})
-        #     wrong = await c.fetchall()
 
         value = '\n'.join(f'{lookup[index]} <@{users}>: {wrongs}'
                           for (index, (users, wrongs)) in enumerate(wrong)) or 'No Records'
@@ -283,12 +206,6 @@ class Leaderboard:
                 """
         records = await self.bot.pool.fetch(query, user.id)
 
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT game, record FROM leaderboard "
-        #                          "WHERE userid = :id GROUP BY game ORDER BY record ASC LIMIT 5",
-        #                          {'id': user.id})
-        #     records = await c.fetchall()
-
         value = '\n'.join(f'{lookup[index]} {users}: {record}'
                           for (index, (users, record)) in enumerate(records)) or 'No Records'
         embed.add_field(name="Top Records", value=value, inline=True)
@@ -299,12 +216,6 @@ class Leaderboard:
                 """
         games = await self.bot.pool.fetch(query, user.id)
 
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT game, games FROM leaderboard "
-        #                          "WHERE userid = :id GROUP BY game ORDER BY games DESC LIMIT 5",
-        #                          {'id': user.id})
-        #     games = await c.fetchall()
-
         value = '\n'.join(f'{lookup[index]} {users}: {game}'
                           for (index, (users, game)) in enumerate(games)) or 'No Records'
         embed.add_field(name="Top games played", value=value, inline=True)
@@ -314,12 +225,6 @@ class Leaderboard:
                 WHERE user_id = $1 GROUP BY game ORDER BY attempts DESC LIMIT 5;
                 """
         attempts = await self.bot.pool.fetch(query, user.id)
-
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT game, attempts FROM leaderboard "
-        #                          "WHERE userid = :id GROUP BY game ORDER BY attempts DESC LIMIT 5",
-        #                          {'id': user.id})
-        #     attempts = await c.fetchall()
 
         value = '\n'.join(f'{lookup[index]} {users}: {attempt}'
                           for (index, (users, attempt)) in enumerate(attempts)) or 'No Records'
@@ -332,12 +237,6 @@ class Leaderboard:
                 """
         correct = await self.bot.pool.fetch(query, user.id)
 
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT game, correct FROM leaderboard "
-        #                          "WHERE userid = :id GROUP BY game ORDER BY correct DESC LIMIT 5",
-        #                          {'id': user.id})
-        #     correct = await c.fetchall()
-
         value = '\n'.join(f'{lookup[index]} {users}: {corrects}'
                           for (index, (users, corrects)) in enumerate(correct)) or 'No Records'
         embed.add_field(name="Total correct answers", value=value, inline=True)
@@ -347,12 +246,6 @@ class Leaderboard:
                 WHERE user_id = $1 GROUP BY game ORDER BY wrong DESC LIMIT 5;
                 """
         wrong = await self.bot.pool.fetch(query, user.id)
-
-        # async with aiosqlite.connect(db_path) as db:
-        #     c = await db.execute("SELECT game, wrong FROM leaderboard "
-        #                          "WHERE userid = :id GROUP BY game ORDER BY wrong DESC LIMIT 5",
-        #                          {'id': user.id})
-        #     wrong = await c.fetchall()
 
         value = '\n'.join(f'{lookup[index]} {users}: {wrongs}'
                           for (index, (users, wrongs)) in enumerate(wrong)) or 'No Records'
@@ -367,15 +260,6 @@ class Leaderboard:
         # author id
         # string to return. will add record if applicable
         ret = ''
-        # async with aiosqlite.connect(db_path) as db:
-        #     # get record for a user in current guild for current game
-        #
-        #     c = await db.execute("SELECT record, games, attempts, wrong, correct"
-        #                          " FROM leaderboard WHERE userid = :id AND game = :game"
-        #                          " AND guildid = :guildid",
-        #                          {'id': id, 'game': game, 'guildid': guildid})
-        #     dump = await c.fetchall()
-        #     # if there is a record
 
         query = """
                 SELECT record, games, attempts, wrong, correct 
@@ -395,9 +279,6 @@ class Leaderboard:
                                 """
                         await self.bot.pool.execute(query, record, id, game, guildid)
 
-                        # await db.execute("UPDATE leaderboard SET record = :record "
-                        #                  "WHERE userid = :id AND game = :game AND guildid = :guildid",
-                        #                  {'record': record, 'id': id, 'game': game, 'guildid': guildid})
                         # add to return string
                         ret += f'Congratulations! You have broken your previous record of {prev[0]} seconds :tada:'
 
@@ -427,14 +308,6 @@ class Leaderboard:
             await self.bot.pool.execute(query, dump[0][1] + 1, attempts,
                                         wrong, correct, id, game, guildid)
 
-            # await db.execute("UPDATE leaderboard SET games = :games,"
-            #                  " attempts = :att, wrong = :wrong, correct = :corr "
-            #                  "WHERE userid = :id AND game = :game AND guildid = :guildid",
-            #                  {'id': id, 'games': dump[0][1] + 1, 'guildid': guildid,
-            #                   'att': attempts,
-            #                   'wrong': wrong,
-            #                   'corr': correct, 'game': game})
-            # await db.commit()
             # return the return string (if applicable else returns empty string)
             return ret
         else:
@@ -452,12 +325,7 @@ class Leaderboard:
                     """
             await self.bot.pool.execute(query, id, guildid, game,
                                         record, 1, attempts, wrong, correct)
-            # await db.execute("INSERT INTO leaderboard VALUES "
-            #                  "(:game, :id, :record, :attempts, :wrong, :correct, :games, :guildid)",
-            #                  {'game': game, 'id': id, 'record': record,
-            #                   'attempts': attempts, 'wrong': wrong,
-            #                   'correct': correct, 'games': 1, 'guildid': guildid})
-            # await db.commit()
+
             ret += f'This must be your first time playing! Congratulations, your record was recorded.' \
                    f' Check the leaderboard to see if you got anywhere'
             return ret
