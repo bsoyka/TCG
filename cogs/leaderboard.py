@@ -284,15 +284,15 @@ class Leaderboard:
 
             # update a player's game in leaderboard adding corrects/attempts/games etc
             if isinstance(attempts, int):
-                attempts = dump[0][2] + attempts
+                attempts = dump['attempts'] + attempts
             else:
                 attempts = 0
             if isinstance(wrong, int):
-                wrong = dump[0][3] + wrong
+                wrong = dump['wrong'] + wrong
             else:
                 wrong = 0
             if isinstance(correct, int):
-                correct = dump[0][4] + correct
+                correct = dump['correct'] + correct
             else:
                 correct = 0
 
