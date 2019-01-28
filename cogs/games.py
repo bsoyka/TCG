@@ -33,162 +33,30 @@ class Games:
     def __init__(self, bot):
         self.bot = bot
 
-    # @commands.command()
-    # async def clashtrivia(self, ctx, *people_to_play: discord.Member):
-    #     """Play a game of clash of clans trivia with friends and/or yourself
-    #
-    #     PARAMETERS: optional: [ping friends to play] - play a multiplayer game with friends
-    #     EXAMPLE: `clashtrivia` or `clashtrivia @friend1 @friend2 @friend3`
-    #     RESULT: Initiates a COC trivia game with yourself or with friends 1, 2, 3 and yourself"""
-    #     info = {ctx.author.id: {"user": ctx.author,
-    #                             "attempts": 0,
-    #                             "correct": 0,
-    #                             "turn": 0}}
-    #     for user in people_to_play:
-    #         info[user.id] = {"user": user,
-    #                          "attempts": 0,
-    #                          "correct": 0,
-    #                          "turn": 0}
-    #
-    #     current_turn_id = 0
-    #
-    #     def check(ctx):
-    #         if (ctx is None) or (ctx.author.id != current_turn_id):
-    #             return False
-    #         if ctx.content.lower() in ['a', 'b', 'c', 'd']:
-    #             return True
-    #         else:
-    #             return False
-    #
-    #     query = """SELECT * FROM clash_trivia ORDER BY RANDOM() LIMIT $1
-    #             """
-    #     questions = await self.bot.pool.fetch(query, len(info) * 5)
-    #
-    #     # async with aiosqlite.connect(db_path) as db:
-    #     #     c = await db.execute("SELECT * FROM clash_trivia ORDER BY RANDOM() LIMIT :lim",
-    #     #                          {'lim': len(info) * 5})
-    #     #     questions = await c.fetchall()
-    #
-    #     def turn():
-    #         for entry in info:
-    #             if info[entry]['turn'] == 0:
-    #                 info[entry]['turn'] = 1
-    #                 return info[entry]
-    #         for entry in info:
-    #             info[entry]['turn'] = 0
-    #         for entry in info:
-    #             return info[entry]
-    #
-    #     for trivia in questions:
-    #         user = turn()
-    #         current_turn_id = user['user'].id
-    #         e = discord.Embed(colour=discord.Colour.blue())
-    #         e.set_author(name=f"{user['user'].display_name}#{user['user'].discriminator}'s turn",
-    #                      icon_url=user['user'].avatar_url)
-    #         e.set_thumbnail(url=trivia['icon_url'])
-    #         e.title = trivia['question']
-    #         e.description = trivia['answers']
-    #         e.set_footer(text="Multiple Choice! Type the letter of the answer you think it is.")
-    #         send = await ctx.send(embed=e)
-    #         while True:
-    #             info[user['user'].id]['attempts'] += 1
-    #             try:
-    #                 # wait for a response which satisfies our check function
-    #                 msg = await self.bot.wait_for('message', check=check, timeout=15.0)
-    #                 e = discord.Embed()
-    #                 e.add_field(name="Explanation", value=trivia[5])
-    #
-    #                 if msg.content.lower() == trivia['correct'].lower():
-    #                     info[user['user'].id]['correct'] += 1
-    #
-    #                     e.colour = discord.Colour.green()
-    #                     e.set_author(name="Correct!", icon_url=user['user'].avatar_url)
-    #
-    #                 else:
-    #                     e.colour = discord.Colour.red()
-    #                     e.set_author(name="Incorrect!", icon_url=user['user'].avatar_url)
-    #
-    #                 uuser = info[user['user'].id]
-    #
-    #                 e.description = f"You are currently {uuser['correct']}/{uuser['attempts']}"
-    #                 await send.edit(embed=e)
-    #                 break
-    #             except asyncio.TimeoutError:
-    #                 embed = discord.Embed(colour=0xff0000)
-    #                 embed.set_author(name="You took too long. Your turn has been skipped!",
-    #                                  icon_url=user['user'].avatar_url)
-    #                 await send.edit(embed=embed)
-    #                 if len(info) == 1:
-    #                     return
-    #                 break
-    #
-    #     e = discord.Embed(colour=discord.Colour.green())
-    #     for user in info:
-    #         base = info[user]
-    #         lb = Leaderboard(ctx)
-    #         intolb = await lb.into_leaderboard(game='clashtrivia', record="N/A",
-    #                                            attempts=base['attempts'],
-    #                                            wrong=base['attempts'] - base['correct'],
-    #                                            correct=base['correct'],
-    #                                            guildid=ctx.guild.id,
-    #                                            id=base['user'].id)
-    #         e.add_field(name=f"{base['user'].display_name}#{base['user'].discriminator}:",
-    #                     value=f"{base['correct']}/{base['attempts']}\n"
-    #                           f"{intolb or ''}",
-    #                     inline=False)
-    #     e.add_field(name="\u200b",
-    #                 value="Thanks for playing!\n"
-    #                       "Check the leaderboard for updated standings!",
-    #                 inline=False)
-    #     e.set_author(name="Game Over; y'all made it!",
-    #                  icon_url=ctx.author.avatar_url)
-    #     e.set_footer(text="Images and explanations courtesy of Clash of Clans Wiki. ",
-    #                  icon_url=self.bot.user.avatar_url)
-    #     await ctx.send(embed=e)
-
     async def trivia_category(self, ctx, difficulty_topic, limit):
         # return question with category or difficulty for trivia games
 
         # if msg content is easy, med, hard then look for that:
         if difficulty_topic in ['easy', 'medium', 'hard']:
             query = """SELECT * FROM trivia WHERE used = $1 AND difficulty = $2"
-                       ORDER BY RANDOM() LIMIT $3
+                       ORDER BY RANDOM() LIMIT $3;
                        """
-            return await self.bot.pool.fetch(query, 0, difficulty_topic, limit)
-
-            # async with aiosqlite.connect(db_path) as db:
-            #     c = await db.execute("SELECT * FROM trivia WHERE used = 0 AND difficulty = :dif"
-            #                          " ORDER BY RANDOM() LIMIT :lim",
-            #                          {'dif': difficulty_topic,
-            #                           'lim': limit})
-            #     # return 10 questions with difficulty specified
-            #     return await c.fetchall()
+            return await ctx.db.fetch(query, 0, difficulty_topic, limit)
 
         # if no topic then get 10 random ones
         if difficulty_topic == 'all':
             query = """SELECT * FROM trivia WHERE used = $1 ORDER BY RANDOM() LIMIT $2
                     """
-            return await self.bot.pool.fetch(query, 0, limit)
-            # async with aiosqlite.connect(db_path) as db:
-            #     c = await db.execute("SELECT * FROM trivia WHERE used = 0 ORDER BY RANDOM() LIMIT :lim",
-            #                          {'lim': limit})
-            #     return await c.fetchall()
+            return await ctx.db.fetch(query, 0, limit)
 
         # if it is 'categories' then they want to know what categories available
         else:
             if difficulty_topic == 'categories':
-                # async with aiosqlite.connect(db_path) as db:
-                #
-                #     c = await db.execute("SELECT category FROM trivia")
-                #     # unique ones as a list
-                #     dump = list(set(await c.fetchall()))
-                #     # send them
-                #
-                # get all categories for all questions
-                query = """SELECT category FROM trivia
+
+                query = """SELECT DISTINCT category FROM trivia
                         """
-                dump = list(set(await self.bot.pool.fetch(query)))
-                desc = '\n'.join(n[0] for n in dump)
+                dump = await ctx.db.fetch(query)
+                desc = '\n'.join(n['category'] for n in dump)
 
                 e = discord.Embed(colour=0x00ff00)
                 e.set_author(name="Categories for trivia games", icon_url=ctx.author.avatar_url)
@@ -198,34 +66,20 @@ class Games:
 
                 await ctx.send(embed=e)
                 # return False
-                return False
+                return
             # otherwise get 10 questions with that category
             query = """
                     SELECT * FROM trivia WHERE used = $1
                     AND category = $2 ORDER BY RANDOM() LIMIT $3
                     """
-            return await self.bot.pool.fetch(query, 0, difficulty_topic, limit)
+            return await ctx.db.fetch(query, 0, difficulty_topic, limit)
 
-            # async with aiosqlite.connect(db_path) as db:
-            #     c = await db.execute("SELECT * FROM trivia WHERE used = 0 AND category = :cat"
-            #                          " ORDER BY RANDOM() LIMIT :lim",
-            #                          {'cat': difficulty_topic,
-            #                           'lim': limit})
-            #     # return results (could be none)
-            #     return await c.fetchall()
-
-    @commands.group(name="trivia", invoke_without_command=True)
-    async def _trivia(self, ctx, *, difficulty_or_topic: str=None):
+    @commands.group(name="trivia")
+    async def _trivia(self, ctx):
         """
         Group: Play a trivia game with friends and/or yourself, or find available catagories.
-        Invoke without a command to play solo
-
-        PARAMETERS: optional: [difficulty or topic]
-        EXAMPLE: `trivia easy` or `trivia Politics`
-        RESULT: Initiates an easy game of trivia or one with the topic Politics
         """
-        cmd = self.bot.get_command("trivia solo")
-        await cmd.invoke(ctx=ctx)
+        await ctx.show_help('trivia')
 
     @_trivia.command(aliases=['category'])
     async def categories(self, ctx):
@@ -236,6 +90,7 @@ class Games:
         EXAMPLE: `trivia categories`
         RESULT: Returns available trivia categories to select from
         """
+
         send = await self.trivia_category(ctx, 'categories', 10)
         if send:
             e = discord.Embed(colour=0xff0000)
@@ -256,19 +111,16 @@ class Games:
         """
         if not difficulty_or_topic:
             difficulty_or_topic = 'all'
+
         dump = await self.trivia_category(ctx, difficulty_or_topic, 10)
-        # if I sent a category list:
-        if dump is False:
-            return
 
         # if category not found
-        if len(dump) == 0:
+        if not dump:
             embed = discord.Embed(colour=0xff0000)
             embed.set_author(name="Category not found", icon_url=ctx.author.avatar_url)
             embed.description = f'Find all categories with {ctx.prefix}trivia categories. ' \
                                 'Difficulties are: easy, medium, hard.'
             return await ctx.send(embed=embed)
-
 
         correct = 0
         attempts = 0
@@ -288,12 +140,12 @@ class Games:
         # same idea as clash trivia
         for trivia in dump:
             embed = discord.Embed(colour=0x0000ff)
-            embed.set_author(name=trivia[3], icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=trivia['question'], icon_url=ctx.message.author.avatar_url)
             embed.set_thumbnail(url='https://is2-ssl.mzstatic.com/'
                                     'image/thumb/Purple118/v4/96/c7/cc/'
                                     '96c7cccf-42e3-33c8-4b12-aa12e0049c8a/source/256x256bb.jpg')
 
-            embed.description = trivia[5]
+            embed.description = trivia['answers']
             embed.set_footer(text="Multiple Choice! Type the letter of the answer you think it is.")
             send = await ctx.send(embed=embed)
 
@@ -303,14 +155,9 @@ class Games:
                     attempts += 1
 
                     query = "UPDATE trivia SET used = 1 WHERE id = $1"
-                    await self.bot.pool.execute(query, trivia[0])
+                    await ctx.db.execute(query, trivia['id'])
 
-                    # async with aiosqlite.connect(db_path) as db:
-                    #     await db.execute("UPDATE trivia SET used = 1 WHERE id = :id",
-                    #                      {'id': trivia[0]})
-                    #     await db.commit()
-
-                    if msg.content.lower() == trivia[4][0].lower():
+                    if msg.content.lower() == trivia['correct'][0].lower():
                         correct += 1
                         embed.colour = discord.Colour.green()
                         embed.set_author(name="Correct!", icon_url=ctx.message.author.avatar_url)
@@ -319,9 +166,9 @@ class Games:
                         embed.colour = discord.Colour.red()
                         embed.set_author(name="Incorrect!", icon_url=ctx.message.author.avatar_url)
 
-                    embed.title = trivia[3]
-                    embed.description = trivia[5]
-                    embed.add_field(name="Correct Answer:", value=trivia[4])
+                    embed.title = trivia['question']
+                    embed.description = trivia['answers']
+                    embed.add_field(name="Correct Answer:", value=trivia['correct'])
                     embed.add_field(name='\u200b',
                                     value=f'You are currently {correct}/{attempts}',
                                     inline=False)
@@ -339,8 +186,8 @@ class Games:
                                            attempts=attempts,
                                            wrong=attempts - correct,
                                            correct=correct,
-                                           guildid=ctx.guild.id,
-                                           id=ctx.author.id)
+                                           guild_id=ctx.guild.id,
+                                           user_id=ctx.author.id)
 
         e = discord.Embed(colour=0x00ff00)
 
@@ -358,7 +205,7 @@ class Games:
         await ctx.send(embed=e)
 
     @_trivia.command()
-    async def game(self, ctx, difficulty_topic, *people_to_play: discord.Member):
+    async def game(self, ctx, people_to_play: commands.Greedy[discord.Member], *, difficulty_topic='all'):
         """Start a trivia game with multiple friend(s)! Specify the difficulty or topic.
         There are 10 questions each; your turn will be skipped if you do not respond within 15 seconds.
 
@@ -367,16 +214,10 @@ class Games:
         RESULT: Starts a trivia game with friend 1, or a trivia game with friends 1, 2 and 3 and category General Knowledge
         """
 
-        member = await commands.MemberConverter().convert(ctx, difficulty_topic)
-
-        if member:
-            difficulty_topic = 'all'
-
         dump = await self.trivia_category(ctx, difficulty_topic, (len(people_to_play) + 1)*2)
-        if dump is False:
-            return
+
         # if category not found
-        if len(dump) == 0:
+        if not dump:
             embed = discord.Embed(colour=0xff0000)
             embed.set_author(name="Category not found", icon_url=ctx.author.avatar_url)
             embed.description = f'Find all categories with `{ctx.prefix}trivia categories` command. ' \
@@ -394,11 +235,6 @@ class Games:
                              "attempts": 0,
                              "correct": 0,
                              "turn": 0}
-        if member:
-            info[member.id] = {"user": member,
-                               "attempts": 0,
-                               "correct": 0,
-                               "turn": 0}
 
         current_turn_id = 0
 
@@ -427,9 +263,9 @@ class Games:
             embed = discord.Embed(colour=0x0000ff)
             embed.set_author(name=f"{user['user'].display_name}#{user['user'].discriminator}'s Turn!",
                              icon_url=user['user'].avatar_url)
-            embed.title = trivia[3]
+            embed.title = trivia['question']
             embed.set_thumbnail(url=user['user'].avatar_url)
-            embed.description = trivia[5]
+            embed.description = trivia['answers']
             embed.set_footer(text="Multiple Choice! Type the letter of the answer you think it is.")
             await ctx.send(embed=embed)
 
@@ -439,19 +275,14 @@ class Games:
                 try:
                     msg = await self.bot.wait_for('message', check=check, timeout=15.0)
 
-                    embed.title = trivia[3]
-                    embed.description = trivia[5]
-                    embed.add_field(name="Correct Answer:", value=trivia[4], inline=False)
+                    embed.title = trivia['question']
+                    embed.description = trivia['answers']
+                    embed.add_field(name="Correct Answer:", value=trivia['correct'], inline=False)
 
                     query = "UPDATE trivia SET used = 1 WHERE id = $1"
-                    await self.bot.pool.execute(query, trivia[0])
+                    await ctx.db.execute(query, trivia['id'])
 
-                    # async with aiosqlite.connect(db_path) as db:
-                    #     await db.execute("UPDATE trivia SET used = 1 WHERE id = :id",
-                    #                      {'id': trivia[0]})
-                    #     await db.commit()
-
-                    if msg.content.lower() == trivia[4].lower():
+                    if msg.content.lower() == trivia['correct'][0].lower():
                         info[user['user'].id]['correct'] += 1
 
                         embed.colour = discord.Colour.green()
@@ -498,8 +329,8 @@ class Games:
                                                attempts=base['attempts'],
                                                wrong=base['attempts'] - base['correct'],
                                                correct=base['correct'],
-                                               guildid=ctx.guild.id,
-                                               id=base['user'].id)
+                                               guild_id=ctx.guild.id,
+                                               user_id=base['user'].id)
 
             e.add_field(name=f"{base['user'].display_name}#{base['user'].discriminator}:",
                         value=f"{base['correct']}/{base['attempts']}\n"
@@ -548,8 +379,8 @@ class Games:
                 lb = Leaderboard(self.bot)
                 await lb.into_leaderboard(game='reacttest', record=3,
                                           attempts=1, wrong="N/A",
-                                          correct="N/A", guildid=ctx.guild.id,
-                                          id=ctx.author.id)
+                                          correct="N/A", guild_id=ctx.guild.id,
+                                          user_id=ctx.author.id)
                 return
                 # end game
             except asyncio.TimeoutError:
@@ -575,8 +406,8 @@ class Games:
                 lb = Leaderboard(self.bot)
                 leader = await lb.into_leaderboard(game='reacttest', record=round(dif, 4),
                                                    attempts=1, wrong="N/A",
-                                                   correct="N/A", guildid=ctx.guild.id,
-                                                   id=ctx.author.id)
+                                                   correct="N/A", guild_id=ctx.guild.id,
+                                                   user_id=ctx.author.id)
 
                 # reaction time
                 desc = f'**{dif}** seconds'
@@ -598,7 +429,7 @@ class Games:
                 break
 
     @commands.command(name='guess')
-    async def guess_number(self, ctx, limit: int=None):
+    async def guess_number(self, ctx, limit: int=1000):
         """
         I choose a number and you have to guess! Default limit is 1000. I will tell you if you are too small or too big.
 
@@ -607,13 +438,6 @@ class Games:
         RESULT: Starts a guessing game with a number between 1000 or 500
         """
         # if limit is not specified set to default 1000. I should just change it to that next to limit hey
-
-        if not limit:
-            limit = 1000
-        # try:
-        #     int(limit)
-        # except:
-        #     return await ctx.send("Please enter an integer parameter, or none at all (will default to 1000)")
 
         async def check_send():
             # if its first round dont give them a difference
@@ -650,7 +474,7 @@ class Games:
                 return False
 
         # start guessing game
-        await ctx.send(f"I have chosen a number between 1 and {str(limit)}. You have 15 seconds to try a "
+        await ctx.send(f"I have chosen a number between 1 and {limit}. You have 15 seconds to try a "
                        "number before I time out. I will tell you if you are too big or too small")
 
         number = random.randint(1, limit)  # choose number
@@ -684,8 +508,8 @@ class Games:
                         lb = Leaderboard(self.bot)
                         leaderboard = await lb.into_leaderboard(game='guess', record=counter,
                                                                 attempts=counter, wrong='N/A',
-                                                                correct='N/A', guildid=ctx.guild.id,
-                                                                id=ctx.author.id)
+                                                                correct='N/A', guild_id=ctx.guild.id,
+                                                                user_id=ctx.author.id)
 
                         if leaderboard:
                             e.description = leaderboard
@@ -700,8 +524,8 @@ class Games:
                     lb = Leaderboard(self.bot)
                     await lb.into_leaderboard(game='guess', record=500,
                                               attempts=counter, wrong='N/A',
-                                              correct='N/A', guildid=ctx.guild.id,
-                                              id=ctx.author.id)
+                                              correct='N/A', guild_id=ctx.guild.id,
+                                              user_id=ctx.author.id)
 
                 break
 

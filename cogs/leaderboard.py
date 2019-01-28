@@ -28,7 +28,7 @@ class Leaderboard:
             EXAMPLE: `leaderboard guess`
             RESULT: Leaderboard for the `guess` command"""
         if not game:
-            games = '\n{},'.join(self.games)
+            games = '\n'.join(self.games)
             return await ctx.send(f"Please choose a game type. These include: {games}\n...more coming soon!")
 
         return await self.get_leaderboard_guild(game, ctx)
@@ -41,7 +41,7 @@ class Leaderboard:
             RESULT: Leaderboard for all servers who have played the `guess` game"""
         if not game:
             # need to choose a game
-            games = '\n{},'.join(self.games)
+            games = '\n'.join(self.games)
             return await ctx.send(f"Please choose a game type. These include: {games}\n...more coming soon!")
 
         return await self.get_leaderboard_all(game, ctx)
@@ -55,7 +55,7 @@ class Leaderboard:
         if not user:
             user = ctx.author
 
-        send = await self.get_leaderboard_user(user, ctx)
+        await self.get_leaderboard_user(user, ctx)
 
     async def get_leaderboard_all(self, gamecom, ctx):
         # emojis we're gonna use for leaderboard. This one is for
@@ -73,7 +73,7 @@ class Leaderboard:
                 SELECT user_id, record FROM leaderboard 
                 WHERE game = $1 ORDER BY record ASC LIMIT 5;
                 """
-        records = await self.bot.pool.fetch(query, gamecom)
+        records = await ctx.db.fetch(query, gamecom)
 
         value = '\n'.join(f'{lookup[i]} <@{users[i]}>: {record[i]}'
                           for (index, (users, record)) in enumerate(records)) or 'No Records'
@@ -93,7 +93,7 @@ class Leaderboard:
                 SELECT user_id, attempts FROM leaderboard 
                 WHERE game = $1 ORDER BY attempts DESC LIMIT 5;
                 """
-        attempts = await self.bot.pool.fetch(query, gamecom)
+        attempts = await ctx.db.fetch(query, gamecom)
 
         value = '\n'.join(f'{lookup[index]} <@{users}>: {attempt}'
                           for (index, (users, attempt)) in enumerate(attempts)) or 'No Records'
@@ -106,7 +106,7 @@ class Leaderboard:
                 SELECT user_id, correct FROM leaderboard 
                 WHERE game = $1 ORDER BY correct DESC LIMIT 5;
                 """
-        correct = await self.bot.pool.fetch(query, gamecom)
+        correct = await ctx.db.fetch(query, gamecom)
 
         value = '\n'.join(f'{lookup[index]} <@{users}>: {corrects}'
                           for (index, (users, corrects)) in enumerate(correct)) or 'No Records'
@@ -116,7 +116,7 @@ class Leaderboard:
                 SELECT user_id, wrong FROM leaderboard 
                 WHERE game = $1 ORDER BY wrong DESC LIMIT 5;
                 """
-        wrong = await self.bot.pool.fetch(query, gamecom)
+        wrong = await ctx.db.fetch(query, gamecom)
 
         value = '\n'.join(f'{lookup[index]} <@{users}>: {wrongs}'
                           for (index, (users, wrongs)) in enumerate(wrong)) or 'No Records'
@@ -202,8 +202,9 @@ class Leaderboard:
 
         query = """
                 SELECT game, record FROM leaderboard 
-                WHERE user_id = $1 GROUP BY game ORDER BY record ASC LIMIT 5;
+                WHERE user_id = $1 ORDER BY record ASC LIMIT 5;
                 """
+
         records = await self.bot.pool.fetch(query, user.id)
 
         value = '\n'.join(f'{lookup[index]} {users}: {record}'
@@ -212,7 +213,7 @@ class Leaderboard:
 
         query = """
                 SELECT game, games FROM leaderboard 
-                WHERE user_id = $1 GROUP BY game ORDER BY games DESC LIMIT 5;
+                WHERE user_id = $1 ORDER BY games DESC LIMIT 5;
                 """
         games = await self.bot.pool.fetch(query, user.id)
 
@@ -222,7 +223,7 @@ class Leaderboard:
 
         query = """
                 SELECT game, attempts FROM leaderboard 
-                WHERE user_id = $1 GROUP BY game ORDER BY attempts DESC LIMIT 5;
+                WHERE user_id = $1 ORDER BY attempts DESC LIMIT 5;
                 """
         attempts = await self.bot.pool.fetch(query, user.id)
 
@@ -233,7 +234,7 @@ class Leaderboard:
 
         query = """
                 SELECT game, correct FROM leaderboard 
-                WHERE user_id = $1 GROUP BY game ORDER BY correct DESC LIMIT 5;
+                WHERE user_id = $1 ORDER BY correct DESC LIMIT 5;
                 """
         correct = await self.bot.pool.fetch(query, user.id)
 
@@ -243,7 +244,7 @@ class Leaderboard:
 
         query = """
                 SELECT game, wrong FROM leaderboard 
-                WHERE user_id = $1 GROUP BY game ORDER BY wrong DESC LIMIT 5;
+                WHERE user_id = $1 ORDER BY wrong DESC LIMIT 5;
                 """
         wrong = await self.bot.pool.fetch(query, user.id)
 
@@ -253,8 +254,7 @@ class Leaderboard:
         embed.set_author(name=f"Leaderboard - {user.display_name}#{user.discriminator}")
         await ctx.send(embed=embed)
 
-    async def into_leaderboard(self, game, record, attempts, wrong, correct,
-                               guildid, id):
+    async def into_leaderboard(self, game, record, attempts, wrong, correct, guild_id, user_id):
         # insert stuff into leaderboard table in db. Any command that is on the leaderboard will insert stuff into here
         # on completion of command
         # author id
@@ -266,24 +266,22 @@ class Leaderboard:
                 FROM leaderboard WHERE user_id = $1 AND game = $2 
                 AND guild_id = $3;
                 """
-        dump = await self.bot.pool.fetch(query, id, game, guildid)
+        dump = await self.bot.pool.fetchrow(query, user_id, game, guild_id)
 
-        if len(dump) != 0:
-            for prev in dump:
-                try:
-                    # if the record is less than old one in db
-                    if prev[0] > record:
-                        query = """
-                                UPDATE leaderboard SET record = $1 
-                                WHERE user_id = $2 AND game = $3 AND guild_id = $4;
-                                """
-                        await self.bot.pool.execute(query, record, id, game, guildid)
+        if dump:
+            # if the record is less than old one in db
+            if isinstance(record, int):
+                if dump['record'] > record:
+                    query = """
+                            UPDATE leaderboard SET record = $1 
+                            WHERE user_id = $2 AND game = $3 AND guild_id = $4;
+                            """
+                    await self.bot.pool.execute(query, record, user_id, game, guild_id)
 
-                        # add to return string
-                        ret += f'Congratulations! You have broken your previous record of {prev[0]} seconds :tada:'
+                    # add to return string
+                    units = 'seconds' if game == 'reacttest' else 'attempts'
+                    ret += f"Congratulations! You have broken your previous record of {dump['record']} {units} :tada:"
 
-                except TypeError:
-                    pass
             # update a player's game in leaderboard adding corrects/attempts/games etc
             if isinstance(attempts, int):
                 attempts = dump[0][2] + attempts
@@ -297,19 +295,18 @@ class Leaderboard:
                 correct = dump[0][4] + correct
             else:
                 correct = 0
-            if not isinstance(record, int):
-                record = 0
 
             query = """
                     UPDATE leaderboard SET games = $1,
-                    attempts = $2, wrong = $3, correct = $4 
+                    attempts = attempts + 1, wrong = $3, correct = $4 
                     WHERE user_id = $5 AND game = $6 AND guild_id = $7;
                     """
-            await self.bot.pool.execute(query, dump[0][1] + 1, attempts,
-                                        wrong, correct, id, game, guildid)
+            await self.bot.pool.execute(query, attempts, wrong,
+                                        correct, user_id, game, guild_id)
 
             # return the return string (if applicable else returns empty string)
             return ret
+
         else:
             if not isinstance(attempts, int):
                 attempts = 0
@@ -323,7 +320,7 @@ class Leaderboard:
             query = """
                     INSERT INTO leaderboard VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
                     """
-            await self.bot.pool.execute(query, id, guildid, game,
+            await self.bot.pool.execute(query, user_id, guild_id, game,
                                         record, 1, attempts, wrong, correct)
 
             ret += f'This must be your first time playing! Congratulations, your record was recorded.' \
