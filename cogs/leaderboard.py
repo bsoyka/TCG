@@ -47,6 +47,17 @@ class Leaderboard:
         return await self.get_leaderboard_all(game, ctx)
 
     @commands.command()
+    async def transfer(self, ctx):
+        import csv
+        with open('riddles.csv') as csv_file:
+            query = "INSERT INTO riddles (riddle, answer, used) VALUES ($1, $2, $3)"
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            for row in csv_reader:
+                await ctx.db.execute(query, row[0], row[1], 0)
+        await ctx.message.add_reaction(ctx.tick(True))
+
+
+    @commands.command()
     async def gamestats(self, ctx, user: discord.Member = None):
         """Gives stats for games a user has played.
             PARAMETERS: [user] - @mention, nick#discrim, id
