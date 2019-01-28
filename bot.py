@@ -35,7 +35,7 @@ with open(json_location) as creds:
 
 class TCG(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix=commands.when_mentioned_or('?'), case_insensitive=True)  # setup bot
+        super().__init__(command_prefix=commands.when_mentioned_or('+'), case_insensitive=True)  # setup bot
         self.remove_command('help')
 
         for e in initial_extensions:
