@@ -49,7 +49,7 @@ class Leaderboard:
     @commands.command()
     async def transfer(self, ctx):
         import csv
-        with open('riddles.csv') as csv_file:
+        with open('trivia.csv') as csv_file:
             query = "INSERT INTO riddles (riddle, answer, used) VALUES ($1, $2, $3)"
             csv_reader = csv.reader(csv_file, delimiter=',')
             for row in csv_reader:
