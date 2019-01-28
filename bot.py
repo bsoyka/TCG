@@ -20,7 +20,11 @@ REPO_PATH = os.path.join(os.getcwd())
 
 initial_extensions = [
                 'cogs.admin',
-                'cogs.poll'
+                'cogs.poll',
+    'cogs.games',
+    'cogs.hangman',
+    'cogs.jokes',
+    'cogs.leaderboard'
                       ]
 
 with open(json_location) as creds:
