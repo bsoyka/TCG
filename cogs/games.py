@@ -7,22 +7,11 @@ from cogs.leaderboard import Leaderboard
 from cogs.utils import db
 
 
-class ClashTrivia(db.Table, table_name='clash_trivia'):
-    id = db.PrimaryKeyColumn()
-
-    category = db.Column(db.String)
-    question = db.Column(db.String)
-    answers = db.Column(db.String)
-    correct = db.Column(db.String)
-    explanation = db.Column(db.String)
-    icon_url = db.Column(db.String)
-
-
 class TriviaQuestions(db.Table, table_name='trivia'):
     id = db.PrimaryKeyColumn()
 
-    category = db.Column(db.String)
-    difficulty = db.Column(db.String)
+    category = db.Column(db.String, index=True)
+    difficulty = db.Column(db.String, index=True)
     question = db.Column(db.String)
     answers = db.Column(db.String)
     correct = db.Column(db.String)
