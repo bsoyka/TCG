@@ -298,8 +298,8 @@ class Leaderboard:
 
             query = """
                     UPDATE leaderboard SET games = $1,
-                    attempts = attempts + 1, wrong = $3, correct = $4 
-                    WHERE user_id = $5 AND game = $6 AND guild_id = $7;
+                    attempts = attempts + 1, wrong = $2, correct = $3 
+                    WHERE user_id = $4 AND game = $5 AND guild_id = $6;
                     """
             await self.bot.pool.execute(query, attempts, wrong,
                                         correct, user_id, game, guild_id)
