@@ -49,13 +49,18 @@ class Leaderboard:
     @commands.command()
     async def transfer(self, ctx):
         import csv
-        with open('trivia.csv') as csv_file:
-            query = "INSERT INTO riddles (riddle, answer, used) VALUES ($1, $2, $3)"
-            csv_reader = csv.reader(csv_file, delimiter=',')
+        with open('trivia.csv', newline='\r\n', encoding='utf-8') as csv_file:
+            query = "INSERT INTO trivia (category, difficulty, question," \
+                    " answers, correct, used) VALUES ($1, $2, $3, $4, $5, $6)"
+            csv_reader = csv.reader(csv_file, delimiter=',', quotechar="'")
+            rows = 0
             for row in csv_reader:
-                await ctx.db.execute(query, row[0], row[1], 0)
+                if rows == 0:
+                    rows += 1
+                    continue
+                rows += 1
+                await ctx.db.execute(query, row[1], row[2], row[3], row[4], row[5], 0)
         await ctx.message.add_reaction(ctx.tick(True))
-
 
     @commands.command()
     async def gamestats(self, ctx, user: discord.Member = None):
