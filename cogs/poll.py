@@ -143,7 +143,7 @@ class Polls:
         payload = discord.RawReactionActionEvent(data=data, emoji=emoji)
         await self.reaction_action(payload)
 
-        await ctx.message.add_reaction(ctx.tick(True))
+        await ctx.tick()
 
     @poll.command()
     async def stats(self, ctx, message: int):
