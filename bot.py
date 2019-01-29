@@ -27,7 +27,8 @@ initial_extensions = [
     'cogs.leaderboard',
     'cogs.automod',
     'cogs.mod',
-    'cogs.reminder'
+    'cogs.reminder',
+    'cogs.roles'
                       ]
 
 with open(json_location) as creds:

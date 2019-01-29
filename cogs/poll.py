@@ -1,7 +1,5 @@
 from discord.ext import commands
 import discord
-import typing
-from cogs.utils.emojis import EMOJI_UNICODE, UNICODE_EMOJI
 import re
 from cogs.utils import db, checks
 import emoji as emoj
