@@ -288,7 +288,7 @@ class Misc:
         if member.bot:
             bot_count = [n for n in member.guild.members if n.bot]
             channel = member.guild.get_channel(self.BOT_COUNT_CHANNEL)
-            await channel.edit(name=f'Bot Count: {len{bot_count)}', reason='Bot Joined')
+            await channel.edit(name=f'Bot Count: {len(bot_count)}', reason='Bot Joined')
         else:
             user_count = [n for n in member.guild.members if not n.bot]
             channel = member.guild.get_channel(self.USER_COUNT_CHANNEL)
