@@ -351,7 +351,7 @@ class Misc:
     async def member_welcomer(self, member, join_leave: bool):
         e = discord.Embed(colour=discord.Colour.green() if join_leave else discord.Colour.red())
         e.set_author(name='New Member' if join_leave else 'Member Left')
-        e.set_image(url=member.avatar_url)
+        e.set_thumbnail(url=member.avatar_url)
 
         if join_leave:
             e.description = f'Welcome to **The Coding Group**, {member.mention} \nWe hope you enjoy your time here!'
