@@ -149,14 +149,13 @@ class Misc:
             if role not in ctx.author.roles else await ctx.author.remove_roles(role, reason='Auto Role')
         await ctx.tick()
 
-
     @commands.group()
     async def poll(self, ctx):
         """Group: create a simple poll, add a response or see stats"""
         pass
 
     @poll.command()
-    async def simple(self, ctx, title: str,
+    async def create(self, ctx, title: str,
                      emojis: commands.Greedy[UnicodeEmojiConverter], *, options: str):
         """Create a simple poll
 
