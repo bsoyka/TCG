@@ -96,6 +96,19 @@ class Misc:
         await ctx.tick()
 
     @commands.command()
+    async def members(self, ctx):
+        member_count = [n for n in ctx.guild.members if not n.bot]
+        bot_count = [n for n in ctx.guild.members if n.bot]
+        total_count = ctx.guild.members
+
+        e = discord.Embed(colour=discord.Colour.blue())
+        e.title = 'Member Count'
+        e.description = f':person_with_blond_hair: Member Count: {len(member_count)}\n' \
+                        f':robot: Bot Count: {len(bot_count)}\n' \
+                        f':baggage_claim: Total: {len(total_count)}'
+        await ctx.send(embed=e)
+
+    @commands.command()
     async def pyhelper(self, ctx):
         """Give yourself the Python Helper role"""
         role = ctx.guild.get_role(self.PYTHON_HELPER)
@@ -126,6 +139,7 @@ class Misc:
         await ctx.author.add_roles(role, reason='Auto Role') \
             if role not in ctx.author.roles else await ctx.author.remove_roles(role, reason='Auto Role')
         await ctx.tick()
+
 
     @commands.group()
     async def poll(self, ctx):
