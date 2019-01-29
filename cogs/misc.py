@@ -83,6 +83,8 @@ class Misc:
     @commands.command()
     @commands.has_permissions(manage_guild=True)
     async def update_channels(self, ctx):
+        """Update the member count channels manually
+        """
         await self._update_channels(ctx.author)
         await self._update_channels(ctx.me)
         await ctx.tick()
@@ -90,6 +92,12 @@ class Misc:
     @commands.command()
     @commands.has_permissions(manage_guild=True)
     async def update_member_goal(self, ctx, number: int):
+        """Update the member goal count channel.
+
+        You must pass in a number for the goal to be
+
+        Eg. `update_member_goal 200` to update the goal to be 200 members
+        """
         channel = ctx.guild.get_channel(self.MEMBER_GOAL_CHANNEL)
         await channel.edit(name=f'Member Goal: {number}',
                            reason=f'Command by {ctx.author.display_name}#{ctx.author.discriminator}')
@@ -97,6 +105,7 @@ class Misc:
 
     @commands.command()
     async def members(self, ctx):
+        """Receive a current list of members"""
         member_count = [n for n in ctx.guild.members if not n.bot]
         bot_count = [n for n in ctx.guild.members if n.bot]
         total_count = ctx.guild.members
@@ -143,11 +152,27 @@ class Misc:
 
     @commands.group()
     async def poll(self, ctx):
+        """Group: create a simple poll, add a response or see stats"""
         pass
 
     @poll.command()
     async def simple(self, ctx, title: str,
                      emojis: commands.Greedy[UnicodeEmojiConverter], *, options: str):
+        """Create a simple poll
+
+        Your title must be wrapped in " " quotes if it is more than one word.
+
+        Emojis must be either unicode or a custom emoji.
+
+        Options *must* be seperated by a comma
+
+        Eg. `poll simple "This is my title" :x: :cry: :crystal_ball: Cross option, crying second, crystal ball emoji`
+
+        If you have an unequal number of emojis and options,
+        I will either fill in emojis to fill in the gap, or delete emojis if there is too many
+
+        Eg 2. `poll simple` Title :x: :cry: :my_custom_emoji: cross, cry, my custom emoji option`
+        """
         filler_emojis = [
             '1\u20e3',
             '2\u20e3',
@@ -197,6 +222,14 @@ class Misc:
 
     @poll.command()
     async def choose(self, ctx, message: int, *, to_choose):
+        """Choose an option for a poll
+
+        You must pass in the message ID of the poll you are trying to vote on
+
+        You must pass in either the emoji or the content (exactly) of the poll you want to vote on
+
+        Eg. `poll choose 3456339185234 :x:`
+        Eg.2 `poll choose 139372959214 this is the second option`"""
         data = {'message_id': message,
                 'channel_id': ctx.channel.id,
                 'guild_id': ctx.guild.id,
@@ -225,6 +258,10 @@ class Misc:
 
     @poll.command()
     async def stats(self, ctx, message: int):
+        """Get stats for a poll
+
+        You must pass in the message ID of the poll you want to fetch
+        """
         query = "SELECT * FROM poll INNER JOIN polls_reactions " \
                 "ON poll.message = polls_reactions.message WHERE poll.message = $1"
         dump = await ctx.db.fetch(query, message)
