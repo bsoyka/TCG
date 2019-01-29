@@ -14,6 +14,7 @@ class Roles:
 
     @commands.command()
     async def pyhelper(self, ctx):
+        """Give yourself the Python Helper role"""
         role = ctx.guild.get_role(self.PYTHON_HELPER)
         await ctx.author.add_roles(role, reason='Auto Role') \
             if role not in ctx.author.roles else await ctx.author.remove_roles(role, reason='Auto Role')
@@ -21,6 +22,7 @@ class Roles:
 
     @commands.command()
     async def jshelper(self, ctx):
+        """Give yourself the JavaScript Helper role"""
         role = ctx.guild.get_role(self.JAVASCRIPT_HELPER)
         await ctx.author.add_roles(role, reason='Auto Role') \
             if role not in ctx.author.roles else await ctx.author.remove_roles(role, reason='Auto Role')
@@ -28,6 +30,7 @@ class Roles:
 
     @commands.command()
     async def coder(self, ctx):
+        """Give yourself the Coder role"""
         role = ctx.guild.get_role(self.CODER)
         await ctx.author.add_roles(role, reason='Auto Role') \
             if role not in ctx.author.roles else await ctx.author.remove_roles(role, reason='Auto Role')
@@ -35,6 +38,7 @@ class Roles:
 
     @commands.command()
     async def announcements(self, ctx):
+        """Give yourself the Announcements Member role"""
         role = ctx.guild.get_role(self.ANNOUNCEMENTS_MEMBER)
         await ctx.author.add_roles(role, reason='Auto Role') \
             if role not in ctx.author.roles else await ctx.author.remove_roles(role, reason='Auto Role')
