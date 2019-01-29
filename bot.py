@@ -19,16 +19,15 @@ json_location = os.path.join(os.getcwd(), 'creds.json')
 REPO_PATH = os.path.join(os.getcwd())
 
 initial_extensions = [
-                'cogs.poll',
     'cogs.games',
     'cogs.hangman',
     'cogs.jokes',
-'cogs.admin',
+    'cogs.admin',
     'cogs.leaderboard',
     'cogs.automod',
     'cogs.mod',
     'cogs.reminder',
-    'cogs.roles'
+    'cogs.misc'
                       ]
 
 with open(json_location) as creds:
