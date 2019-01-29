@@ -26,7 +26,12 @@ class AutoMod:
                             '[here](https://github.com/KanoComputing/nodejs-profanity-util/' \
                             'blob/master/lib/swearwords.json)' \
                             '\n\nIf you think one is incorrect, please DM a mod. Thank You.'
-            await message.author.send(embed=e)
+            try:
+                await message.author.send(embed=e)
+            except:
+                e.set_footer(text='You have DM\'s disabled so I have shamed you here instead.',
+                             icon_url=message.author.avatar_url)
+                await message.channel.send(embed=e)
             await message.delete()
 
     async def on_member_update(self, before, after):
@@ -52,7 +57,12 @@ class AutoMod:
                             'blob/master/lib/swearwords.json)' \
                             '\n\nIf you think one is incorrect, please DM a mod. Thank You.\n\n' \
                             'You Are free to change your nickname back to an appropriate name'
-            await after.send(embed=e)
+            try:
+                await after.send(embed=e)
+            except:
+                e.set_footer(text='You have DM\'s disabled so I have shamed you here instead.',
+                             icon_url=after.avatar_url)
+                await self.bot.get_channel(501870177957314573).send(embed=e)
 
     async def on_member_join(self, member):
         if member.id in self.SAFE_MEMBERS:
@@ -76,7 +86,12 @@ class AutoMod:
                             'blob/master/lib/swearwords.json)' \
                             '\n\nIf you think one is incorrect, please DM a mod. Thank You.\n\n' \
                             'You Are free to change your nickname back to an appropriate name'
-            await member.send(embed=e)
+            try:
+                await member.send(embed=e)
+            except:
+                e.set_footer(text='You have DM\'s disabled so I have shamed you here instead.',
+                             icon_url=member.avatar_url)
+                await self.bot.get_channel(501870177957314573).send(embed=e)
 
 
 def setup(bot):
