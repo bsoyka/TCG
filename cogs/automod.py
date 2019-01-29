@@ -15,9 +15,9 @@ class AutoMod:
         if message.author.id in self.SAFE_MEMBERS:
             return
 
-        if any(message.content in s for s in PROFANE_WORDS):
-            await asyncio.sleep(1)
-            await message.delete()
+        words = message.content.split(' ')
+        if [s for s in words if s in PROFANE_WORDS]:
+            await asyncio.sleep(0.1)
 
             e = discord.Embed(colour=discord.Colour.red())
             e.description = 'Your message has been deleted. \n\n' \
@@ -27,16 +27,22 @@ class AutoMod:
                             'blob/master/lib/swearwords.json)' \
                             '\n\nIf you think one is incorrect, please DM a mod. Thank You.'
             await message.author.send(embed=e)
+            await message.delete()
 
     async def on_member_update(self, before, after):
-        if before.nickname == after.nickname:
+        if before.display_name == after.display_name:
             return
         if before.id in self.SAFE_MEMBERS:
             return
 
-        if any(after.nickname in s for s in PROFANE_WORDS):
+        words = after.display_name.split(' ')
+        if [s for s in words if s in PROFANE_WORDS]:
             await asyncio.sleep(1)
-            await after.edit(nick='Censored Name')
+            try:
+                await after.edit(nick='Censored Name',
+                                 reason='Profane name')
+            except discord.Forbidden:
+                pass
 
             e = discord.Embed(colour=discord.Colour.red())
             e.description = 'Your nickname has been changed\n\n' \
@@ -52,9 +58,15 @@ class AutoMod:
         if member.id in self.SAFE_MEMBERS:
             return
 
-        if any(member.nickname in s for s in PROFANE_WORDS):
+        words = member.display_name.split(' ')
+        if [s for s in words if s in PROFANE_WORDS]:
             await asyncio.sleep(1)
-            await member.edit(nick='Censored Name')
+
+            try:
+                await member.edit(nick='Censored Name',
+                                  reason='Profane name')
+            except discord.Forbidden:
+                pass
 
             e = discord.Embed(colour=discord.Colour.red())
             e.description = 'Your nickname has been changed\n\n' \

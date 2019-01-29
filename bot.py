@@ -24,7 +24,8 @@ initial_extensions = [
     'cogs.games',
     'cogs.hangman',
     'cogs.jokes',
-    'cogs.leaderboard'
+    'cogs.leaderboard',
+    'cogs.automod'
                       ]
 
 with open(json_location) as creds:
