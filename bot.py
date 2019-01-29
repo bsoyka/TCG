@@ -25,13 +25,15 @@ initial_extensions = [
     'cogs.hangman',
     'cogs.jokes',
     'cogs.leaderboard',
-    'cogs.automod'
+    'cogs.automod',
+    'cogs.mod',
+    'cogs.reminder'
                       ]
 
 with open(json_location) as creds:
     creds = json.load(creds)
 
-# logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 
 class TCG(commands.Bot):
