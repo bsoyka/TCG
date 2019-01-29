@@ -170,7 +170,7 @@ class Misc:
         If you have an unequal number of emojis and options,
         I will either fill in emojis to fill in the gap, or delete emojis if there is too many
 
-        Eg 2. `poll simple` Title :x: :cry: :my_custom_emoji: cross, cry, my custom emoji option`
+        Eg 2. `poll simple Title :x: :cry: :my_custom_emoji: cross, cry, my custom emoji option`
         """
         filler_emojis = [
             '1\u20e3',
