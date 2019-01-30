@@ -314,7 +314,7 @@ class Leaderboard:
                 wrong = 0
             if not isinstance(correct, int):
                 correct = 0
-            if not isinstance(record, int):
+            if isinstance(record, str):
                 record = 0
             # if first time playing add userid with stuff to game to db
             query = """
