@@ -363,7 +363,7 @@ class Games:
                 e.set_author(name="No Cheating!",
                              icon_url='https://cdn.shopify.com/s/files/1/1061/1924/products/'
                                       'Very_Angry_Emoji_7f7bb8df-d9dc-4cda-b79f-5453e764d4ea_large.png?v=1480481058')
-                await send.edit(embed=embed)
+                await send.edit(embed=e)
                 # insert into leaderboard that they cheated
                 lb = Leaderboard(self.bot)
                 await lb.into_leaderboard(game='reacttest', record=3,

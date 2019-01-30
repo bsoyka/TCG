@@ -77,8 +77,30 @@ class Misc:
     MEMBER_GOAL_CHANNEL = 539709682848235520
     NEW_MEMBER_CHANNEL = 501873813408186380
     INFO_CHANNEL = 530941832549367820
+    SUGGESTION_CHANNEL = 513579486608883724
+
     MEMBER_ROLE = 501872002680750100
     BOTS_ROLE = 501873192869298176
+
+    @commands.command()
+    async def suggest(self, ctx, *, suggestion: str):
+        channel = ctx.guild.get_channel(self.SUGGESTION_CHANNEL)
+        e = discord.Embed(colour=discord.Colour.green())
+        e.set_author(name=f'{ctx.author.display_name}#{ctx.author.discriminator}',
+                     icon_url=ctx.author.avatar_url)
+        e.description = f'**New Suggestion!**\n\n{suggestion}'
+
+        msg = await channel.send(embed=e)
+        await msg.add_reaction('\N{THUMBS UP SIGN}')
+        await msg.add_reaction('\N{THUMBS DOWN SIGN}')
+
+        e = discord.Embed(colour=discord.Colour.green())
+        e.description = 'You suggestion has been received. ' \
+                        'Thank you truly; we really value your suggestions and feedback!'
+        try:
+            await ctx.author.send(embed=e)
+        except:
+            await ctx.send(embed=e, delete_after=10)
 
     @commands.command()
     @commands.has_permissions(manage_guild=True)
