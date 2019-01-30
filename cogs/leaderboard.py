@@ -24,21 +24,36 @@ class Leaderboard:
     @commands.group(invoke_without_command=True)
     async def leaderboard(self, ctx, game: str = None):
         """Sends leaderboard for a specific game. Server and game specific.
-            PARAMETERS: [game] - name of the game you want leaderboard for
-            EXAMPLE: `leaderboard guess`
-            RESULT: Leaderboard for the `guess` command"""
+
+        Possible games options:
+            `guess`
+            `reacttest`
+            `hangman`
+            `trivia`
+            `riddle`
+
+        PARAMETERS: [game] - name of the game you want leaderboard for
+        EXAMPLE: `leaderboard guess`
+        RESULT: Leaderboard for the `guess` command"""
         if not game:
-            games = '\n'.join(self.games)
-            return await ctx.send(f"Please choose a game type. These include: {games}\n...more coming soon!")
+            await ctx.show_help('leaderboard')
 
         return await self.get_leaderboard_guild(game, ctx)
 
     @leaderboard.command()
     async def all(self, ctx, game: str = None):
         """Gives leaderboard for all servers the bot is in/whom play the game
-            PARAMETERS: [game] - name of the game you want leaderboard for
-            EXAMPLE: `leaderboard all guess`
-            RESULT: Leaderboard for all servers who have played the `guess` game"""
+
+        Possible games options:
+            `guess`
+            `reacttest`
+            `hangman`
+            `trivia`
+            `riddle`
+
+        PARAMETERS: [game] - name of the game you want leaderboard for
+        EXAMPLE: `leaderboard all guess`
+        RESULT: Leaderboard for all servers who have played the `guess` game"""
         if not game:
             # need to choose a game
             games = '\n'.join(self.games)
