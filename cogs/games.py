@@ -393,7 +393,7 @@ class Games:
                 # insert into leaderboard stuff
 
                 lb = Leaderboard(self.bot)
-                leader = await lb.into_leaderboard(game='reacttest', record=round(dif, 4),
+                leader = await lb.into_leaderboard(game='reacttest', record=dif,
                                                    attempts=1, wrong="N/A",
                                                    correct="N/A", guild_id=ctx.guild.id,
                                                    user_id=ctx.author.id)
