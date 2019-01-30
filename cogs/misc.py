@@ -86,7 +86,7 @@ class Misc:
     async def suggest(self, ctx, *, suggestion: str):
         channel = ctx.guild.get_channel(self.SUGGESTION_CHANNEL)
         e = discord.Embed(colour=discord.Colour.green())
-        e.set_author(name=f'{ctx.author.display_name}#{ctx.author.discriminator}',
+        e.set_author(name=f'{ctx.author.name}#{ctx.author.discriminator}',
                      icon_url=ctx.author.avatar_url)
         e.description = f'**New Suggestion!**\n\n{suggestion}'
 
@@ -378,7 +378,7 @@ class Misc:
         if join_leave:
             e.description = f'Welcome to **The Coding Group**, {member.mention} \nWe hope you enjoy your time here!'
         else:
-            e.description = f'{member.mention} just left. :cry:'
+            e.description = f'<@{member.id}> just left. :cry:'
 
         e.set_footer(text=f'Member Count: {len(member.guild.members)}')
 
