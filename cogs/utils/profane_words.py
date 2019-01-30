@@ -448,5 +448,6 @@ PROFANE_WORDS = [
     "willies",
     "willy",
     "xrated",
-    "xxx"
+    "xxx",
+    "wtf"
 ]
