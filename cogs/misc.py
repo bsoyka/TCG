@@ -92,6 +92,7 @@ class Misc:
         e.add_field(name=f'New Suggestion!', value=suggestion)
 
         msg = await channel.send(embed=e)
+        await ctx.tick()
         await msg.add_reaction('\N{THUMBS UP SIGN}')
         await msg.add_reaction('\N{THUMBS DOWN SIGN}')
 
