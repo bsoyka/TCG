@@ -88,7 +88,8 @@ class Misc:
         e = discord.Embed(colour=discord.Colour.green())
         e.set_author(name=f'{ctx.author.name}#{ctx.author.discriminator}',
                      icon_url=ctx.author.avatar_url)
-        e.description = f'**New Suggestion!**\n\n{suggestion}'
+
+        e.add_field(name=f'New Suggestion!', value=suggestion)
 
         msg = await channel.send(embed=e)
         await msg.add_reaction('\N{THUMBS UP SIGN}')
