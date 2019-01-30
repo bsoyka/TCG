@@ -180,7 +180,7 @@ class Hangman:
             # adds attempts and fails etc too
             lb = Leaderboard(ctx)
             intolb = await lb.into_leaderboard(game='hangman', record=game.attempts, attempts=game.attempts,
-                                               wrong=game.fails, correct=1, guildid=ctx.guild.id, id=ctx.author.id)
+                                               wrong=game.fails, correct=1, guild_id=ctx.guild.id, user_id=ctx.author.id)
             # if it returned something (first time or record)
             if intolb:
                 embed.description = intolb
@@ -197,7 +197,7 @@ class Hangman:
 
             lb = Leaderboard(ctx)
             intolb = await lb.into_leaderboard(game='hangman', record=game.attempts, attempts=game.attempts,
-                                               wrong=game.fails, correct=1, guildid=ctx.guild.id, id=ctx.author.id)
+                                               wrong=game.fails, correct=1, guild_id=ctx.guild.id, user_id=ctx.author.id)
             # if it returned something (first game or record)
             if intolb:
                 embed.description = intolb
