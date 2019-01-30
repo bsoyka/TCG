@@ -32,11 +32,10 @@ class Leaderboard:
             `trivia`
             `riddle`
 
-        PARAMETERS: [game] - name of the game you want leaderboard for
-        EXAMPLE: `leaderboard guess`
-        RESULT: Leaderboard for the `guess` command"""
+        Eg. `leaderboard guess`
+        """
         if not game:
-            await ctx.show_help('leaderboard')
+            return await ctx.show_help('leaderboard')
 
         return await self.get_leaderboard_guild(game, ctx)
 
@@ -51,9 +50,8 @@ class Leaderboard:
             `trivia`
             `riddle`
 
-        PARAMETERS: [game] - name of the game you want leaderboard for
-        EXAMPLE: `leaderboard all guess`
-        RESULT: Leaderboard for all servers who have played the `guess` game"""
+        Eg: `leaderboard all guess`
+        """
         if not game:
             # need to choose a game
             games = '\n'.join(self.games)
