@@ -314,8 +314,6 @@ class Leaderboard:
                 wrong = 0
             if not isinstance(correct, int):
                 correct = 0
-            if isinstance(record, str):
-                record = 0
             # if first time playing add userid with stuff to game to db
             query = """
                     INSERT INTO leaderboard VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
