@@ -270,7 +270,7 @@ class Leaderboard:
 
         if dump:
             # if the record is less than old one in db
-            if isinstance(record, int):
+            if isinstance(record, int) or game == 'reacttest':
                 if dump['record'] > record:
                     query = """
                             UPDATE leaderboard SET record = $1 
